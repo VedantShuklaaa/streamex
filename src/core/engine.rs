@@ -1,9 +1,13 @@
 use futures_util::{SinkExt, StreamExt};
-use std::{collections::HashSet, sync::Arc};
-use tokio::sync::{mpsc::Receiver, broadcast};
+use std::{collections::HashSet, sync::Arc, io::Read};
+use tokio::sync::{broadcast, mpsc::Receiver};
 use tokio_tungstenite::{connect_async, tungstenite::Message};
+use flate2::read::GzDecoder;
 
-use crate::{core::{adapter::ExchangeAdapter, types::EngineCommand}, models::normalized::NormalizedResponse};
+use crate::{
+    core::{adapter::ExchangeAdapter, types::EngineCommand},
+    models::normalized::NormalizedResponse,
+};
 
 pub async fn start_engine<A>(
     adapter: A,
@@ -52,8 +56,40 @@ pub async fn start_engine<A>(
                         Ok(Message::Text(text)) => {
                             let parsed = adapter.parse_message(&text);
 
+                            if parsed.is_empty() {
+                                continue;
+                            }
                             for trade in parsed {
                                 let _ = tx.send(trade);
+                            }
+                        }
+
+                        Ok(Message::Binary(bin)) => {
+                            let mut decoder = GzDecoder::new(&bin[..]);
+                            let mut text = String::new();
+
+                            if let Err(err) = decoder.read_to_string(&mut text) {
+                                eprintln!("gzip decode failed: {}", err);
+                                continue;
+                            }
+
+                            if text.contains("\"ping\"") {
+                                let pong = text.replace("ping", "pong");
+                                let _ = write.send(Message::Text(pong.into())).await;
+
+                                continue;
+                            }
+
+                            let parsed = adapter.parse_message(&text);
+
+                            if parsed.is_empty() {
+                                continue;
+                            }
+
+                            for trade in parsed {
+                                if let Err(err) = tx.send(trade.clone()) {
+                                    eprintln!("broadcast failed: {}", err);
+                                }
                             }
                         }
 

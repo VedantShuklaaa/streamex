@@ -18,4 +18,13 @@ pub type TradeCallback = Arc<dyn Fn(NormalizedResponse) + Send + Sync>;
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum Exchange {
 	Binance,
+    Coinbase,
+    Okx,
+    Bybit,
+    Kraken,
+    Bitget,
+    Bitfinex,
+    CryptoCom,
+    Htx,
+    Bitstamp,
 }

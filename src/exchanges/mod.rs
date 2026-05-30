@@ -1,1 +1,10 @@
 pub mod binance;
+pub mod bitfinex;
+pub mod bitget;
+pub mod bitstamp;
+pub mod bybit;
+pub mod coinbase;
+pub mod crypto_com;
+pub mod htx;
+pub mod kraken;
+pub mod okx;
