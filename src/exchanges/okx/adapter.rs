@@ -66,10 +66,7 @@ impl ExchangeAdapter for OkxAdapter {
                 vec![normalized]
             }
 
-            Err(err) => {
-                println!("parse error: {}", err);
-                vec![]
-            }
+            Err(_) => vec![]
         }
     }
 }

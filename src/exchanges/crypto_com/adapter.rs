@@ -57,10 +57,7 @@ impl ExchangeAdapter for CryptoComAdapter {
         let parsed = serde_json::from_str::<CryptoComRawResponse>(text);
         match parsed {
             Ok(payload) => normalize_crypto_com_response(payload),
-            Err(err) => {
-                println!("crypto.com parse error: {}", err);
-                vec![]
-            }
+            Err(_) => vec![]
         }
     }
 }

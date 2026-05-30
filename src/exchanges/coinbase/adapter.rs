@@ -66,10 +66,7 @@ impl ExchangeAdapter for CoinbaseAdapter {
                 vec![normalize_coinbase_response(payload)]
             }
 
-            Err(err) => {
-                eprintln!("parse error: {:?}", err);
-                vec![]
-            }
+            Err(_) => vec![]
         }
     }
 }

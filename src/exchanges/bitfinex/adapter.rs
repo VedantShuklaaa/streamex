@@ -60,7 +60,6 @@ impl ExchangeAdapter for BitfinexAdapter {
     }
 
     fn parse_message(&self, text: &str) -> Vec<NormalizedResponse> {
-        println!("raw: {}", text);
         if text.starts_with('{') {
             let value: serde_json::Value = match serde_json::from_str(text) {
                 Ok(v) => v,
@@ -80,8 +79,6 @@ impl ExchangeAdapter for BitfinexAdapter {
                     .lock()
                     .unwrap()
                     .insert(chan_id, symbol.clone());
-
-                println!("[bitfinex] mapped {} -> {}", chan_id, symbol);
             }
 
             return vec![];
@@ -90,7 +87,6 @@ impl ExchangeAdapter for BitfinexAdapter {
         let parsed = serde_json::from_str::<BitfinexRawResponse>(text);
         match parsed {
             Ok(payload) => {
-                println!("parsed successfully");
                 let channel_id = match &payload {
                     BitfinexRawResponse::Snapshot(channel_id, _) => *channel_id,
                     BitfinexRawResponse::Update(channel_id, _, _) => *channel_id,
