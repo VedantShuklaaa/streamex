@@ -1,6 +1,6 @@
 {
   "name": "streamex-sdk",
-  "version": "1.0.4",
+  "version": "1.0.7",
   "description": "Realtime crypto market streaming SDK built with Rust and napi-rs",
   "main": "index.js",
   "types": "index.d.ts",
